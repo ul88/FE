@@ -3,21 +3,49 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import axios from "axios"
 
-function App() {
-  const [page, setPage] = useState()
 
-  async function fetchPage(){
-    const {data} = await axios.get("http://localhost:8080/api/post", {
-      params : {
-        page : 1,
-        size : 10
-      }
-    })
-    console.log(data)
-    
+
+function App() {
+  const [pages, setPages] = useState<any[]>()
+  const [pageNumber, setPageNumber] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+
+  console.log(pages)
+
+  function moveButton(){
+    const result = []
+    if(!pages) return
+
+    if(pages.prev == true){
+      result.push(<a onClick={()=>setPageNumber(pages.startPage-1)}>prev&ensp;</a>)
+    }
+
+    for(let i = pages.startPage;i<=pages.endPage;i++){
+      result.push(<a onClick={()=>setPageNumber(i)}>{i}&ensp;</a>)
+    }
+
+    if(pages.next == true){
+      result.push(<a onClick={()=>setPageNumber(pages.endPage+1)}>next&ensp;</a>)
+    }
+
+    return result
   }
 
-  useEffect(()=>{fetchPage(), []})
+  useEffect(()=>{
+    async function fetchPage(){
+      const {data} = await axios.get("http://localhost:8080/api/post", {
+        params : {
+          page : pageNumber,
+          size : pageSize
+        }
+      })
+    
+      setPages(data)
+    }
+
+    fetchPage()
+  }
+  ,[pageNumber])
 
   return (
     <>
@@ -44,6 +72,19 @@ function App() {
         <div className="menu-toggle">☰</div>
     </nav>
     <main>
+      { pages && pages.page.map((p: any) => (
+        <div key={p.id}>
+          <span>{p.title}&ensp;&ensp;&ensp;&ensp;</span>
+          <span>{p.content}&ensp;&ensp;&ensp;&ensp;</span>
+          <span>{p.userId}&ensp;&ensp;&ensp;&ensp;</span>
+          <span>{p.likes}&ensp;&ensp;&ensp;&ensp;</span>
+          <span>{p.views}&ensp;&ensp;&ensp;&ensp;</span>
+          <span>{p.createdAt}&ensp;&ensp;&ensp;&ensp;</span>
+        </div>
+      ))}
+
+      {moveButton()}
+
     </main>
     </>
   )
