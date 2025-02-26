@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import axios from "axios"
-
-
+import { Link, Route, Routes } from 'react-router-dom'
+import Login from './Auth/page'
 
 function App() {
   const [pages, setPages] = useState<any[]>()
@@ -39,6 +39,15 @@ function App() {
           size : pageSize
         }
       })
+
+      try{
+        await axios.get("http://localhost:8080", {
+          withCredentials: true
+        })
+      }catch (error) {
+        console.error("CSRF Token initialization error:", error);
+      }
+    
     
       setPages(data)
     }
@@ -49,6 +58,7 @@ function App() {
 
   return (
     <>
+    
       <nav className="navbar">
         <div className="logo">MyLogo</div>
         <ul className="nav-links">
@@ -56,9 +66,7 @@ function App() {
             <li><a href="#">소개</a></li>
             <li><a href="#">서비스</a></li>
             <li>
-                <a href="#">
-                    로그인
-                </a>
+              <Link to="/auth/login">로그인</Link>
             </li>
             <li ><a href="#">회원가입</a></li>
             <li ><span>name</span></li>
@@ -84,8 +92,10 @@ function App() {
       ))}
 
       {moveButton()}
-
     </main>
+    <Routes>
+      <Route path="/auth/login" element={<Login/>}></Route>
+    </Routes>
     </>
   )
 }
