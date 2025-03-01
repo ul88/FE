@@ -4,6 +4,7 @@ import './App.css'
 import axios from "axios"
 import { Link, Route, Routes } from 'react-router-dom'
 import Login from './Auth/page'
+import Cookies from "js-cookie"
 
 function App() {
   const [pages, setPages] = useState<any[]>()
